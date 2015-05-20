@@ -29,7 +29,7 @@ comb_clean <- comb_raw %>%
          city.state = gsub("-Davidson metropolitan government", ", Tennessee", city.state), # then fixing a very specific problem with TN
          per.bike.walk = per.bike + per.walk) 
 
-# download population data from wikipedia (this checks out with the census site and is already formatted in a nice table)
+# pull population data from wikipedia (this checks out with the census site and is already formatted in a nice table)
 pop_raw <- html("https://en.wikipedia.org/wiki/List_of_United_States_cities_by_population") %>%
   html_node("table.wikitable") %>%
   html_table()
@@ -43,13 +43,13 @@ pop_clean <- pop_raw %>%
          change = as.numeric(gsub("−", "-", gsub(".*♠|%|+", "", change))), # regexp means (.) any character, (*) any number of times until the symbol (♠)
          pop.2013 = as.numeric(gsub(",", "", pop.2013)),
          pop.2010 = as.numeric(gsub(",", "", pop.2010)),
-         city = gsub("\\d|\\[|\\]", "", city), # removing back brackets and digits with regular expression
+         city = gsub("\\d|\\[|\\]", "", city), # removing endnote brackets and digits
          area.sqm = as.numeric(gsub(".*♠|sq.*$", "", area.sqm)),
          density = as.numeric(gsub(",|.*♠|per.*$", "", density)),    
          city.state = paste(city, state, sep = ", ")) %>%
   filter(rank < 51)
 
-# merge population data and commuting data
+# merge population and commuting data
 fin_clean <- left_join(pop_clean, comb_clean)
 
 write.csv(fin_clean, "cle_density_commuting.csv", row.names = F)
