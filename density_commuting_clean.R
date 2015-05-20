@@ -1,6 +1,6 @@
-library(readxl)
-library(dplyr)
-library(rvest) 
+library(dplyr) # data manipulation
+library(readxl) # for reading in xlsx files
+library(rvest) # scraping online data
 
 # download bike data from census.gov and import with read_excel
 download.file("http://www.census.gov/hhes/commuting/files/2014/Supplemental-Table3.xlsx", destfile = "bike.xlsx")
@@ -20,10 +20,10 @@ colnames(walk_raw) <- c("city.state", "num.walk", "per.walk", "margin.walk")
 # merge our merge the biking and walking data 
 comb_raw <- left_join(bike_raw, walk_raw)
 
-# clean up the city.state names so we can merge with population data
+# clean up the city.state text so we can merge with population data
 comb_clean <- comb_raw %>%
   filter(!is.na(per.walk)) %>%
-  mutate(city.state = gsub(" city", "", city.state), # don't need city lable
+  mutate(city.state = gsub(" city", "", city.state), # don't need city label
          city.state = gsub(" municipality", "", city.state), # or municipality
          city.state = gsub(" \\(balance\\)", "", city.state), # or (balance)
          city.state = gsub("-Davidson metropolitan government", ", Tennessee", city.state), # then fixing a very specific problem with TN
@@ -40,7 +40,7 @@ colnames(pop_raw) <- c("rank", "city", "state", "pop.2013", "pop.2010", "change"
 pop_clean <- pop_raw %>% 
   select(-location) %>%
   mutate(rank = as.numeric(gsub("-\\(T\\)", "", rank)),
-         change = as.numeric(gsub("−", "-", gsub(".*♠|%|+", "", change))), # regexp means (.) any character, (*) any number of times until the symbols
+         change = as.numeric(gsub("−", "-", gsub(".*♠|%|+", "", change))), # regexp means (.) any character, (*) any number of times until the symbol (♠)
          pop.2013 = as.numeric(gsub(",", "", pop.2013)),
          pop.2010 = as.numeric(gsub(",", "", pop.2010)),
          city = gsub("\\d|\\[|\\]", "", city), # removing back brackets and digits with regular expression

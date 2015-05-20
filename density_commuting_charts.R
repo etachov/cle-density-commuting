@@ -27,7 +27,6 @@ belttexttheme <-theme(plot.title = element_text(size = 28,
 
 
 # scatterplot for walking v. biking communters
-
 cle_den %>%
   filter(city != "Louisville") %>% # no data for Louisville
   mutate(cle = factor(ifelse(city == "Cleveland", "True", "False")), # add a new factor various so we can single out cle
