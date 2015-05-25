@@ -7,7 +7,7 @@ download.file("http://www.census.gov/hhes/commuting/files/2014/Supplemental-Tabl
 
 bike_raw <- read_excel("bike.xlsx", skip = 5)
 
-# renaming columns to make life easier
+# renaming columns 
 colnames(bike_raw) <- c("city.state", "num.bike", "per.bike", "margin.bike")
 
 # download waking data from census.gov and import with read_excel
@@ -17,16 +17,16 @@ walk_raw <- read_excel("walk.xlsx", skip = 5)
 
 colnames(walk_raw) <- c("city.state", "num.walk", "per.walk", "margin.walk")
 
-# merge our merge the biking and walking data 
+# merge the biking and walking data 
 comb_raw <- left_join(bike_raw, walk_raw)
 
-# clean up the city.state text so we can merge with population data
+# clean up the city.state text so we can merge with the population data
 comb_clean <- comb_raw %>%
   filter(!is.na(per.walk)) %>%
-  mutate(city.state = gsub(" city", "", city.state), # don't need city label
-         city.state = gsub(" municipality", "", city.state), # or municipality
-         city.state = gsub(" \\(balance\\)", "", city.state), # or (balance)
-         city.state = gsub("-Davidson metropolitan government", ", Tennessee", city.state), # then fixing a very specific problem with TN
+  # don't need city label; using \\ to escape the special characters
+  mutate(city.state = gsub(" city| municipality| \\(balance\\)", "", city.state), 
+         # then fixing a very specific problem with TN
+         city.state = gsub("-Davidson metropolitan government", ", Tennessee", city.state),
          per.bike.walk = per.bike + per.walk) 
 
 # pull population data from wikipedia (this checks out with the census site and is already formatted in a nice table)
@@ -40,10 +40,12 @@ colnames(pop_raw) <- c("rank", "city", "state", "pop.2013", "pop.2010", "change"
 pop_clean <- pop_raw %>% 
   select(-location) %>%
   mutate(rank = as.numeric(gsub("-\\(T\\)", "", rank)),
-         change = as.numeric(gsub("−", "-", gsub(".*♠|%|+", "", change))), # regexp means (.) any character, (*) any number of times until the symbol (♠)
+         # regexp means (.) any character, (*) 0 or more times until the symbol (♠)
+         change = as.numeric(gsub("−", "-", gsub(".*♠|%|+", "", change))), 
          pop.2013 = as.numeric(gsub(",", "", pop.2013)),
          pop.2010 = as.numeric(gsub(",", "", pop.2010)),
-         city = gsub("\\d|\\[|\\]", "", city), # removing endnote brackets and digits
+         # removing endnote
+         city = gsub("\\d|\\[|\\]", "", city), 
          area.sqm = as.numeric(gsub(".*♠|sq.*$", "", area.sqm)),
          density = as.numeric(gsub(",|.*♠|per.*$", "", density)),    
          city.state = paste(city, state, sep = ", ")) %>%
