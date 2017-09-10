@@ -6,6 +6,6 @@ The <a href="https://github.com/etachov/cle-density-commuting/blob/master/densit
 
 The <a href="https://github.com/etachov/cle-density-commuting/blob/master/density_commuting_charts.R" target="_blank">density_commuting_charts.R</a> script creates the final charts using <a href="http://ggplot2.org/" target="_blank">ggplot2</a>. The final charts are below:
 
-![](https://github.com/etachov/cle-density-commuting/blob/master/Density Rank.png)
+![](https://github.com/etachov/cle-density-commuting/blob/master/Density%20Rank.png)
 
-![](https://github.com/etachov/cle-density-commuting/blob/master/Biking v. Walking.png)
+![](https://github.com/etachov/cle-density-commuting/blob/master/Biking%20v.%20Walking.png)
